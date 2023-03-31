@@ -23,7 +23,6 @@ const Chat = () => {
   ]);
   const [textInput, setTextInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
 
   const apiUrl =
     "https://api.openai.com/v1/engines/text-davinci-002/completions";
@@ -35,8 +34,7 @@ const Chat = () => {
       setLoading(true);
       Keyboard.dismiss();
 
-      const prompt = textInput;
-      setIsTyping(true);
+      const prompt = textInput + ". Answer it like a chad and in a funny way.";
       const response = await axios.post(
         apiUrl,
         {
@@ -63,7 +61,6 @@ const Chat = () => {
       setTextInput("");
       setLoading(false);
       flatListRef.current.scrollToEnd();
-      setIsTyping(false);
     } catch (error) {
       console.log(error);
       setLoading(false);

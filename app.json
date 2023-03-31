@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "chat-gpt",
-    "slug": "chat-gpt",
+    "name": "ChadBOT",
+    "slug": "ChadBOT",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#EBEBEB"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -18,13 +18,20 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.chadbot",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#EBEBEB"
       }
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b1d6b60d-1118-4bc5-888d-9b1556aef94c"
+      }
     }
   }
 }
