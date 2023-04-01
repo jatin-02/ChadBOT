@@ -8,17 +8,37 @@ import {
   Keyboard,
   ActivityIndicator,
 } from "react-native";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
-import Header from "../components/Header";
+import ChatHeader from "../components/ChatHeader";
 import { API_KEY } from "@env";
+import ThemeContext from "../hooks/Context";
+import { COLORS_DARK, COLORS_LIGHT, FONTS, SIZES, SPACING } from "../constants";
 
-const Chat = () => {
+const Chat = ({ navigation }) => {
+  const { darkTheme, setDarkTheme } = useContext(ThemeContext);
+  const theme = darkTheme ? darkChat : lightChat;
   const [data, setData] = useState([
     {
       type: "bot",
-      text: "Hello! I am ChadBOT built by Jatin Soni and I can answer all your questions.",
+      text: "Hello! I am Chad built by Jatin Soni and I can answer all your questions.",
+    },
+    {
+      type: "user",
+      text: "Hello! I am Chad built by Jatin Soni and I can answer all your questions.",
+    },
+    {
+      type: "bot",
+      text: "Hello! I am Chad built by Jatin Soni and I can answer all your questions.",
+    },
+    {
+      type: "user",
+      text: "Hello! I am Chad built by Jatin Soni and I can answer all your questions.",
+    },
+    {
+      type: "bot",
+      text: "Hello! I am Chad built by Jatin Soni and I can answer all your questions.",
     },
   ]);
   const [textInput, setTextInput] = useState("");
@@ -28,6 +48,10 @@ const Chat = () => {
     "https://api.openai.com/v1/engines/text-davinci-002/completions";
 
   const flatListRef = useRef();
+
+  const handleSendd = () => {
+    console.log(theme);
+  };
 
   const handleSend = async () => {
     try {
@@ -68,21 +92,21 @@ const Chat = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Header />
+    <View style={[styles.container, theme.container]}>
+      <ChatHeader navigation={navigation} />
 
       <FlatList
         ref={flatListRef}
         data={data}
         keyExtractor={(item, index) => index.toString()}
-        style={styles.body}
+        style={[styles.body, theme.body]}
         renderItem={({ item }) => (
           <View style={item.type === "user" ? styles.userList : styles.botList}>
             <Text
               style={
                 item.type === "user"
-                  ? [styles.msg, styles.user]
-                  : [styles.msg, styles.bot]
+                  ? [styles.msg, styles.user, theme.user]
+                  : [styles.msg, styles.bot, theme.bot]
               }
             >
               {item.text}
@@ -96,15 +120,23 @@ const Chat = () => {
           value={textInput}
           onChangeText={(text) => setTextInput(text)}
           placeholder="Ask me anything"
-          placeholderTextColor="#919191"
+          placeholderTextColor={
+            darkTheme ? COLORS_DARK.secondaryTwo : COLORS_LIGHT.secondaryTwo
+          }
           style={{ width: "80%" }}
         />
 
-        <TouchableOpacity onPress={handleSend}>
+        <TouchableOpacity onPress={handleSendd}>
           {loading ? (
             <ActivityIndicator color="#919191" />
           ) : (
-            <Ionicons name="ios-send-outline" size={22} color="#919191" />
+            <Ionicons
+              name="ios-send-outline"
+              size={22}
+              color={
+                darkTheme ? COLORS_DARK.secondaryTwo : COLORS_LIGHT.secondaryTwo
+              }
+            />
           )}
         </TouchableOpacity>
       </View>
@@ -121,47 +153,79 @@ const styles = StyleSheet.create({
   },
   body: {
     width: "100%",
-    padding: 10,
-    backgroundColor: "#fff",
+    padding: SPACING.regular,
   },
   botList: {
     flexDirection: "row",
-    padding: 5,
+    padding: SPACING.small,
   },
   userList: {
-    flexDirection: "row",
     flexDirection: "row-reverse",
-    padding: 10,
+    padding: SPACING.regular,
   },
   msg: {
-    fontWeight: "bold",
-    padding: 20,
-    fontSize: 16,
-    lineHeight: 22,
+    fontWeight: FONTS.bold,
+    padding: SPACING.large,
+    fontSize: SIZES.regular,
+    lineHeight: SPACING.large + 2,
   },
   user: {
-    color: "#222",
-    backgroundColor: "#F8ECEB",
+    elevation: SPACING.regular + 2,
     shadowColor: "#52006A",
-    elevation: 15,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    borderBottomLeftRadius: 20,
+
+    marginLeft: SPACING.large,
+
+    borderTopLeftRadius: SPACING.large,
+    borderTopRightRadius: SPACING.large,
+    borderBottomLeftRadius: SPACING.large,
   },
   bot: {
-    color: "grey",
-    backgroundColor: "#F3F3F3",
-    marginBottom: 20,
-    borderBottomRightRadius: 20,
-    borderTopRightRadius: 20,
-    borderBottomLeftRadius: 20,
+    marginBottom: SPACING.regular,
+
+    borderTopRightRadius: SPACING.large,
+    borderBottomLeftRadius: SPACING.large,
+    borderBottomRightRadius: SPACING.large,
   },
   bottom: {
     flexDirection: "row",
     justifyContent: "space-between",
     width: "90%",
-    padding: 5,
-    marginVertical: 10,
-    borderRadius: 15,
+    padding: SPACING.small,
+    marginVertical: SPACING.regular,
+    borderRadius: SPACING.large,
+  },
+});
+
+const darkChat = StyleSheet.create({
+  container: {
+    backgroundColor: COLORS_DARK.secondary,
+  },
+  body: {
+    backgroundColor: COLORS_DARK.black,
+  },
+  user: {
+    color: COLORS_DARK.black,
+    backgroundColor: COLORS_DARK.primary,
+  },
+  bot: {
+    color: COLORS_DARK.secondaryTwo,
+    backgroundColor: COLORS_DARK.secondary,
+  },
+});
+
+const lightChat = StyleSheet.create({
+  container: {
+    backgroundColor: COLORS_LIGHT.secondary,
+  },
+  body: {
+    backgroundColor: COLORS_LIGHT.white,
+  },
+  user: {
+    color: COLORS_LIGHT.black,
+    backgroundColor: COLORS_LIGHT.primary,
+  },
+  bot: {
+    color: COLORS_LIGHT.secondaryTwo,
+    backgroundColor: COLORS_LIGHT.secondary,
   },
 });
