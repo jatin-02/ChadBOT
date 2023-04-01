@@ -7,9 +7,12 @@ import {
   View,
   Keyboard,
   ActivityIndicator,
+  Alert,
 } from "react-native";
+import * as Clipboard from "expo-clipboard";
 import React, { useState, useRef, useContext } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import axios from "axios";
 import ChatHeader from "../components/ChatHeader";
 import { API_KEY } from "@env";
@@ -24,33 +27,29 @@ const Chat = ({ navigation }) => {
       type: "bot",
       text: "Hello! I am Chad built by Jatin Soni and I can answer all your questions.",
     },
-    {
-      type: "user",
-      text: "Hello! I am Chad built by Jatin Soni and I can answer all your questions.",
-    },
-    {
-      type: "bot",
-      text: "Hello! I am Chad built by Jatin Soni and I can answer all your questions.",
-    },
-    {
-      type: "user",
-      text: "Hello! I am Chad built by Jatin Soni and I can answer all your questions.",
-    },
-    {
-      type: "bot",
-      text: "Hello! I am Chad built by Jatin Soni and I can answer all your questions.",
-    },
   ]);
   const [textInput, setTextInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   const apiUrl =
     "https://api.openai.com/v1/engines/text-davinci-002/completions";
 
   const flatListRef = useRef();
 
-  const handleSendd = () => {
-    console.log(theme);
+  const togglePopup = () => {
+    setVisible(true);
+    setTimeout(() => {
+      setVisible(false);
+    }, 3000);
+  };
+
+  const handleCopy = () => {
+    const lastMessage = data[data.length - 1]?.text;
+    if (lastMessage) {
+      Clipboard.setStringAsync(lastMessage);
+    }
+    togglePopup();
   };
 
   const handleSend = async () => {
@@ -95,25 +94,33 @@ const Chat = ({ navigation }) => {
     <View style={[styles.container, theme.container]}>
       <ChatHeader navigation={navigation} />
 
-      <FlatList
-        ref={flatListRef}
-        data={data}
-        keyExtractor={(item, index) => index.toString()}
-        style={[styles.body, theme.body]}
-        renderItem={({ item }) => (
-          <View style={item.type === "user" ? styles.userList : styles.botList}>
-            <Text
-              style={
-                item.type === "user"
-                  ? [styles.msg, styles.user, theme.user]
-                  : [styles.msg, styles.bot, theme.bot]
-              }
+      <View style={[styles.body, theme.body]}>
+        <FlatList
+          ref={flatListRef}
+          data={data}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View
+              style={item.type === "user" ? styles.userList : styles.botList}
             >
-              {item.text}
-            </Text>
+              <Text
+                style={
+                  item.type === "user"
+                    ? [styles.msg, styles.user, theme.user]
+                    : [styles.msg, styles.bot, theme.bot]
+                }
+              >
+                {item.text}
+              </Text>
+            </View>
+          )}
+        />
+        {visible && (
+          <View style={styles.copyText}>
+            <Text style={{ color: "#fff" }}>Copied!</Text>
           </View>
         )}
-      />
+      </View>
 
       <View style={styles.bottom}>
         <TextInput
@@ -123,10 +130,20 @@ const Chat = ({ navigation }) => {
           placeholderTextColor={
             darkTheme ? COLORS_DARK.secondaryTwo : COLORS_LIGHT.secondaryTwo
           }
+          selectionColor={COLORS_LIGHT.secondaryTwo}
           style={{ width: "80%" }}
         />
 
-        <TouchableOpacity onPress={handleSendd}>
+        <TouchableOpacity onPress={handleCopy}>
+          <MaterialIcons
+            name="content-copy"
+            size={22}
+            color="#919191"
+            style={{ marginRight: 10 }}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={handleSend}>
           {loading ? (
             <ActivityIndicator color="#919191" />
           ) : (
@@ -152,6 +169,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   body: {
+    flex: 1,
     width: "100%",
     padding: SPACING.regular,
   },
@@ -193,6 +211,18 @@ const styles = StyleSheet.create({
     padding: SPACING.small,
     marginVertical: SPACING.regular,
     borderRadius: SPACING.large,
+  },
+
+  copyText: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignSelf: "flex-end",
+    backgroundColor: "#BFC869",
+    padding: SPACING.regular,
+
+    borderTopLeftRadius: SPACING.large,
+    borderTopRightRadius: SPACING.large,
+    borderBottomRightRadius: SPACING.large,
   },
 });
 

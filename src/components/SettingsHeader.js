@@ -14,6 +14,7 @@ const SettingsHeader = ({ navigation }) => {
         <MaterialIcons
           name="keyboard-backspace"
           size={32}
+          style={styles.icon}
           color={
             darkTheme ? COLORS_DARK.secondaryTwo : COLORS_LIGHT.secondaryTwo
           }
@@ -38,7 +39,10 @@ const styles = StyleSheet.create({
   title: {
     color: "#222",
     fontSize: 22,
-    marginLeft: SPACING.regular,
+    // marginLeft: SPACING.regular,
+  },
+  icon: {
+    paddingRight: SPACING.regular,
   },
 });
 

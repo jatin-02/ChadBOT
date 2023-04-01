@@ -6,7 +6,6 @@ import ThemeContext from "./../hooks/Context";
 import Checkbox from "expo-checkbox";
 
 const Setting = ({ navigation }) => {
-  // const [checked, setChecked] = useState(false);
   const { darkTheme, setDarkTheme } = useContext(ThemeContext);
   const theme = darkTheme ? darkSettings : lightSettings;
 
