@@ -3,7 +3,7 @@ import React, { useState, useContext } from "react";
 import SettingsHeader from "../components/SettingsHeader";
 import { COLORS_DARK, COLORS_LIGHT, SIZES, SPACING } from "../constants";
 import ThemeContext from "./../hooks/Context";
-import Checkbox from "expo-checkbox";
+import { Switch } from "react-native";
 
 const Setting = ({ navigation }) => {
   const { darkTheme, setDarkTheme } = useContext(ThemeContext);
@@ -17,13 +17,16 @@ const Setting = ({ navigation }) => {
         <Text style={[styles.cardTitle, theme.cardTitle]}>Appearance</Text>
         <View style={styles.cardItem}>
           <Text style={[styles.itemText, theme.itemText]}>Dark Mode</Text>
-          <Checkbox
-            style={styles.checkbox}
+          <Switch
             value={darkTheme}
             onValueChange={(newValue) => {
               setDarkTheme(newValue);
             }}
-            color={darkTheme ? COLORS_DARK.primaryTwo : undefined}
+            trackColor={{
+              false: COLORS_DARK.secondaryTwo,
+              true: COLORS_DARK.primary,
+            }}
+            thumbColor={darkTheme ? COLORS_DARK.primaryTwo : "#555"}
           />
         </View>
       </View>
@@ -48,14 +51,11 @@ const styles = StyleSheet.create({
   cardItem: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: SPACING.regular,
+    alignItems: "center",
   },
   itemText: {
     fontSize: SIZES.regular,
-  },
-  checkbox: {
-    height: 20,
-    width: 20,
+    paddingLeft: SPACING.large,
   },
 });
 
