@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import * as Clipboard from "expo-clipboard";
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
@@ -19,6 +19,7 @@ import { API_KEY } from "@env";
 import ThemeContext from "../hooks/Context";
 import { COLORS_DARK, COLORS_LIGHT, FONTS, SIZES, SPACING } from "../constants";
 import * as Speech from "expo-speech";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Chat = ({ navigation }) => {
   const { darkTheme, setDarkTheme } = useContext(ThemeContext);
@@ -37,6 +38,39 @@ const Chat = ({ navigation }) => {
     "https://api.openai.com/v1/engines/text-davinci-002/completions";
 
   const flatListRef = useRef();
+
+  const saveChatData = async (chatData) => {
+    try {
+      await AsyncStorage.setItem("@chatData", JSON.stringify(chatData));
+      console.log("Chat data saved successfully!", data);
+    } catch (error) {
+      console.log("Error while saving chat data: ", error);
+    }
+  };
+
+  const getChatData = async () => {
+    try {
+      const chatData = await AsyncStorage.getItem("@chatData");
+      if (chatData !== null) {
+        console.log("Chat data retrieved successfully!", data);
+        return JSON.parse(chatData);
+      }
+    } catch (error) {
+      console.log("Error while retrieving chat data: ", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const chatData = await getChatData();
+      if (chatData) {
+        setData(chatData);
+        console.log(data);
+        flatListRef.current.scrollToEnd();
+      }
+    };
+    fetchData();
+  }, []);
 
   const handleSpeech = () => {
     const lastMessage = data[data.length - 1]?.text;
@@ -87,6 +121,12 @@ const Chat = ({ navigation }) => {
       const text = response.data.choices[0].text.trim();
 
       setData([
+        ...data,
+        { type: "user", text: textInput },
+        { type: "bot", text: text },
+      ]);
+
+      saveChatData([
         ...data,
         { type: "user", text: textInput },
         { type: "bot", text: text },
