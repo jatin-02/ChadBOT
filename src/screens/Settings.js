@@ -52,7 +52,7 @@ const Setting = ({ navigation }) => {
 
       {visible && (
         <View style={styles.popUp}>
-          <Text style={{ color: "#222" }}>
+          <Text style={{ color: "#fff" }}>
             Chat Deleted! Please restart the app once.
           </Text>
         </View>
