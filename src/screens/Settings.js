@@ -1,13 +1,32 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useState, useContext } from "react";
 import SettingsHeader from "../components/SettingsHeader";
 import { COLORS_DARK, COLORS_LIGHT, SIZES, SPACING } from "../constants";
 import ThemeContext from "./../hooks/Context";
 import { Switch } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Setting = ({ navigation }) => {
   const { darkTheme, setDarkTheme } = useContext(ThemeContext);
   const theme = darkTheme ? darkSettings : lightSettings;
+
+  const [visible, setVisible] = useState(false);
+
+  const togglePopup = () => {
+    setVisible(true);
+    setTimeout(() => {
+      setVisible(false);
+    }, 4000);
+  };
+
+  const deleteChat = async () => {
+    try {
+      await AsyncStorage.removeItem("@chatData");
+      togglePopup();
+    } catch (error) {
+      console.log("Error while deleting chat data: ", error);
+    }
+  };
 
   return (
     <View style={[styles.container, theme.container]}>
@@ -30,6 +49,21 @@ const Setting = ({ navigation }) => {
           />
         </View>
       </View>
+
+      {visible && (
+        <View style={styles.popUp}>
+          <Text style={{ color: "#222" }}>
+            Chat Deleted! Please restart the app once.
+          </Text>
+        </View>
+      )}
+
+      <View style={[styles.card, theme.card]}>
+        <Text style={[styles.cardTitle, theme.cardTitle]}>Data</Text>
+        <TouchableOpacity onPress={deleteChat} style={styles.cardItem}>
+          <Text style={[styles.itemText, theme.itemText]}>Delete Chat</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -42,6 +76,7 @@ const styles = StyleSheet.create({
   },
   card: {
     padding: 20,
+    marginBottom: 20,
   },
   cardTitle: {
     fontSize: SIZES.large,
@@ -56,6 +91,17 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: SIZES.regular,
     paddingLeft: SPACING.large,
+  },
+  popUp: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignSelf: "flex-end",
+    backgroundColor: "#BFC869",
+    padding: SPACING.regular,
+
+    borderTopLeftRadius: SPACING.large,
+    borderTopRightRadius: SPACING.large,
+    borderBottomRightRadius: SPACING.large,
   },
 });
 

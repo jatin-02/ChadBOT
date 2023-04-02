@@ -42,7 +42,6 @@ const Chat = ({ navigation }) => {
   const saveChatData = async (chatData) => {
     try {
       await AsyncStorage.setItem("@chatData", JSON.stringify(chatData));
-      console.log("Chat data saved successfully!", data);
     } catch (error) {
       console.log("Error while saving chat data: ", error);
     }
@@ -52,7 +51,6 @@ const Chat = ({ navigation }) => {
     try {
       const chatData = await AsyncStorage.getItem("@chatData");
       if (chatData !== null) {
-        console.log("Chat data retrieved successfully!", data);
         return JSON.parse(chatData);
       }
     } catch (error) {
@@ -65,7 +63,6 @@ const Chat = ({ navigation }) => {
       const chatData = await getChatData();
       if (chatData) {
         setData(chatData);
-        console.log(data);
         flatListRef.current.scrollToEnd();
       }
     };
@@ -142,7 +139,7 @@ const Chat = ({ navigation }) => {
 
   return (
     <View style={[styles.container, theme.container]}>
-      <ChatHeader navigation={navigation} />
+      <ChatHeader navigation={navigation} setData={setData} />
 
       <View style={[styles.body, theme.body]}>
         <FlatList
@@ -167,7 +164,7 @@ const Chat = ({ navigation }) => {
         />
         {visible && (
           <View style={styles.copyText}>
-            <Text style={{ color: "#fff" }}>Copied!</Text>
+            <Text style={{ color: "#222" }}>Copied!</Text>
           </View>
         )}
       </View>
@@ -182,7 +179,7 @@ const Chat = ({ navigation }) => {
           }
           selectionColor={COLORS_LIGHT.secondaryTwo}
           style={{
-            width: "75%",
+            flex: 1,
             fontSize: SIZES.regular,
             color: COLORS_LIGHT.secondaryTwo,
           }}
@@ -193,7 +190,7 @@ const Chat = ({ navigation }) => {
             name="volume-2"
             size={20}
             color="#919191"
-            style={{ marginRight: 10 }}
+            style={{ marginRight: 20 }}
           />
         </TouchableOpacity>
 
@@ -202,7 +199,7 @@ const Chat = ({ navigation }) => {
             name="content-copy"
             size={20}
             color="#919191"
-            style={{ marginRight: 10 }}
+            style={{ marginRight: 20 }}
           />
         </TouchableOpacity>
 
@@ -269,6 +266,7 @@ const styles = StyleSheet.create({
   },
   bottom: {
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
     width: "90%",
     padding: SPACING.small,
