@@ -7,17 +7,18 @@ import {
   View,
   Keyboard,
   ActivityIndicator,
-  Alert,
 } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import React, { useState, useRef, useContext } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
+import { SimpleLineIcons } from "@expo/vector-icons";
 import axios from "axios";
 import ChatHeader from "../components/ChatHeader";
 import { API_KEY } from "@env";
 import ThemeContext from "../hooks/Context";
 import { COLORS_DARK, COLORS_LIGHT, FONTS, SIZES, SPACING } from "../constants";
+import * as Speech from "expo-speech";
 
 const Chat = ({ navigation }) => {
   const { darkTheme, setDarkTheme } = useContext(ThemeContext);
@@ -37,6 +38,15 @@ const Chat = ({ navigation }) => {
 
   const flatListRef = useRef();
 
+  const handleSpeech = () => {
+    const lastMessage = data[data.length - 1]?.text;
+    options = {
+      voice: "hi-in-x-hie-network",
+      pitch: 0.9,
+    };
+    Speech.speak(lastMessage, options);
+  };
+
   const togglePopup = () => {
     setVisible(true);
     setTimeout(() => {
@@ -54,6 +64,7 @@ const Chat = ({ navigation }) => {
 
   const handleSend = async () => {
     try {
+      setTextInput("");
       setLoading(true);
       Keyboard.dismiss();
 
@@ -81,7 +92,6 @@ const Chat = ({ navigation }) => {
         { type: "bot", text: text },
       ]);
 
-      setTextInput("");
       setLoading(false);
       flatListRef.current.scrollToEnd();
     } catch (error) {
@@ -126,18 +136,31 @@ const Chat = ({ navigation }) => {
         <TextInput
           value={textInput}
           onChangeText={(text) => setTextInput(text)}
-          placeholder="Ask me anything"
+          placeholder={loading ? "Chad is thinking..." : "Ask me anything"}
           placeholderTextColor={
             darkTheme ? COLORS_DARK.secondaryTwo : COLORS_LIGHT.secondaryTwo
           }
           selectionColor={COLORS_LIGHT.secondaryTwo}
-          style={{ width: "80%" }}
+          style={{
+            width: "75%",
+            fontSize: SIZES.regular,
+            color: COLORS_LIGHT.secondaryTwo,
+          }}
         />
+
+        <TouchableOpacity onPress={handleSpeech}>
+          <SimpleLineIcons
+            name="volume-2"
+            size={20}
+            color="#919191"
+            style={{ marginRight: 10 }}
+          />
+        </TouchableOpacity>
 
         <TouchableOpacity onPress={handleCopy}>
           <MaterialIcons
             name="content-copy"
-            size={22}
+            size={20}
             color="#919191"
             style={{ marginRight: 10 }}
           />
@@ -149,7 +172,7 @@ const Chat = ({ navigation }) => {
           ) : (
             <Ionicons
               name="ios-send-outline"
-              size={22}
+              size={20}
               color={
                 darkTheme ? COLORS_DARK.secondaryTwo : COLORS_LIGHT.secondaryTwo
               }
